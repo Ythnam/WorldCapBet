@@ -8,13 +8,10 @@ namespace WorldCapBet.Model
 {
     public class Pronostic
     {
-        [Required]
         public int Id { get; set; }
 
-        [Required]
         public string IdUser { get; set; }
 
-        [Required]
         public int IdMatch { get; set; }
 
         public int ScoreTeam1 { get; set; }
