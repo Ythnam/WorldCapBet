@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WorldCapBet.Helpers;
 using WorldCapBet.Model;
 using WorldCapBet.Models;
 
@@ -90,6 +91,9 @@ namespace WorldCapBet.Controllers
             {
                 return BadRequest(ModelState);
             }
+
+            //string cache = user.Password;
+            //user.Password = CryptoHelper.Encrypt(cache);
 
             _context.User.Add(user);
             await _context.SaveChangesAsync();
