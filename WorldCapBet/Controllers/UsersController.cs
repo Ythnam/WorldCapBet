@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WorldCapBet.BLL;
 using WorldCapBet.Helpers;
 using WorldCapBet.Model;
 using WorldCapBet.Models;
@@ -16,10 +18,18 @@ namespace WorldCapBet.Controllers
     public class UsersController : Controller
     {
         private readonly WorldCapBetContext _context;
+        private IUserService _userService;
+        private IMapper _mapper;
 
         public UsersController(WorldCapBetContext context)
         {
             _context = context;
+        }
+
+        public UsersController(IUserService userService, IMapper mapper)
+        {
+            _userService = userService;
+            _mapper = mapper;
         }
 
         // GET: api/Users
