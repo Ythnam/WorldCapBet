@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WorldCapBet.Model;
 
-namespace WorldCapBet.Models
+namespace WorldCapBet.Data
 {
     public class WorldCapBetContext : DbContext
     {
