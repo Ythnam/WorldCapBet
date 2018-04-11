@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using WorldCapBet.ApplicationException;
 using WorldCapBet.BLL;
@@ -25,20 +26,18 @@ namespace WorldCapBet.Controllers
     [Route("api/Users")]
     public class UsersController : Controller
     {
-        //private readonly WorldCapBetContext _context;
         private IUserService _userService;
         private IMapper _mapper;
         private readonly AppSettings _appSettings;
 
-        //public UsersController(WorldCapBetContext context)
-        //{
-        //    _context = context;
-        //}
-
-        public UsersController(IUserService userService, IMapper mapper)
+        public UsersController(
+            IUserService userService,
+            IMapper mapper,
+            IOptions<AppSettings> appSettings)
         {
             _userService = userService;
             _mapper = mapper;
+            _appSettings = appSettings.Value;
         }
 
         [AllowAnonymous]

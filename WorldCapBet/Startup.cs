@@ -15,6 +15,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using WorldCapBet.BLL;
+using AutoMapper;
 
 namespace WorldCapBet
 {
@@ -34,6 +35,9 @@ namespace WorldCapBet
 
             services.AddDbContext<WorldCapBetContext>(options =>
                     options.UseInMemoryDatabase(Configuration.GetConnectionString("WorldCapBetContext")));
+
+            // add automapper
+            services.AddAutoMapper();
 
             // configure strongly typed settings objects
             var appSettingsSection = Configuration.GetSection("AppSettings");
@@ -77,6 +81,13 @@ namespace WorldCapBet
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            // global cors policy
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
 
             app.UseAuthentication();
 

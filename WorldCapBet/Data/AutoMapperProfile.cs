@@ -12,8 +12,7 @@ namespace WorldCapBet.Data
     {
         public AutoMapperProfile()
         {
-            CreateMap<User, UserDTO>();
-            CreateMap<UserDTO, User>();
+            CreateMap<User, UserDTO>().ReverseMap();
 
             CreateMap<Match, MatchDTO>();
             CreateMap<MatchDTO, Match>();
