@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WorldCapBet.ApplicationException;
+using WorldCapBet.BLL;
 using WorldCapBet.Data;
 using WorldCapBet.Model;
+using WorldCapBet.ModelDTO;
 
 namespace WorldCapBet.Controllers
 {
@@ -14,113 +18,101 @@ namespace WorldCapBet.Controllers
     [Route("api/Matches")]
     public class MatchesController : Controller
     {
-        private readonly WorldCapBetContext _context;
+        private IMatchService _matchService;
+        private IMapper _mapper;
 
-        public MatchesController(WorldCapBetContext context)
+        public MatchesController(IMatchService matchService, IMapper mapper)
         {
-            _context = context;
+            _matchService = matchService;
+            _mapper = mapper;
         }
 
         // GET: api/Matches
         [HttpGet]
-        public IEnumerable<Match> GetMatch()
+        public IActionResult GetMatch()
         {
-            return _context.Match;
+            var match = _matchService.GetAll();
+            var matchDtos = _mapper.Map<IList<MatchDTO>>(match);
+            return Ok(matchDtos);
         }
 
         // GET: api/Matches/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetMatch([FromRoute] int id)
+        public IActionResult GetMatch([FromRoute]int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var match = await _context.Match.SingleOrDefaultAsync(m => m.Id == id);
-
-            if (match == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(match);
+            var match = _matchService.GetById(id);
+            var matchDtos = _mapper.Map<IList<MatchDTO>>(match);
+            return Ok(matchDtos);
         }
 
         // PUT: api/Matches/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMatch([FromRoute] int id, [FromBody] Match match)
+        public IActionResult UpdateMatch([FromRoute]int id, [FromBody] MatchDTO matchDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != match.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(match).State = EntityState.Modified;
+            // map dto to entity and set id
+            var match = _mapper.Map<Match>(matchDto);
+            match.Id = id;
 
             try
             {
-                await _context.SaveChangesAsync();
+                // save 
+                _matchService.UpdateMatch(match);
+                return Ok();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (AppException ex)
             {
-                if (!MatchExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                // return error message if there was an exception
+                return BadRequest(ex.Message);
             }
+        }
 
-            return NoContent();
+        // PUT: api/Matches/5
+        [HttpPut("score/{id}")]
+        public IActionResult UpdateScore([FromRoute]int id, [FromBody] MatchDTO matchDto)
+        {
+            // map dto to entity and set id
+            var match = _mapper.Map<Match>(matchDto);
+            match.Id = id;
+
+            try
+            {
+                // save 
+                _matchService.UpdateScore(match);
+                return Ok();
+            }
+            catch (AppException ex)
+            {
+                // return error message if there was an exception
+                return BadRequest(ex.Message);
+            }
         }
 
         // POST: api/Matches
         [HttpPost]
-        public async Task<IActionResult> PostMatch([FromBody] Match match)
+        public IActionResult PostMatch([FromBody] MatchDTO matchDto)
         {
-            if (!ModelState.IsValid)
+            // map dto to entity
+            var match = _mapper.Map<Match>(matchDto);
+
+            try
             {
-                return BadRequest(ModelState);
+                // save 
+                _matchService.Create(match);
+                return Ok();
             }
-
-            _context.Match.Add(match);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetMatch", new { id = match.Id }, match);
+            catch (AppException ex)
+            {
+                // return error message if there was an exception
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE: api/Matches/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMatch([FromRoute] int id)
+        public IActionResult DeleteMatch([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var match = await _context.Match.SingleOrDefaultAsync(m => m.Id == id);
-            if (match == null)
-            {
-                return NotFound();
-            }
-
-            _context.Match.Remove(match);
-            await _context.SaveChangesAsync();
-
-            return Ok(match);
-        }
-
-        private bool MatchExists(int id)
-        {
-            return _context.Match.Any(e => e.Id == id);
+            _matchService.Delete(id);
+            return Ok();
         }
     }
 }
