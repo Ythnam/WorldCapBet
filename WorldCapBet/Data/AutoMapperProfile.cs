@@ -14,11 +14,9 @@ namespace WorldCapBet.Data
         {
             CreateMap<User, UserDTO>().ReverseMap();
 
-            CreateMap<Match, MatchDTO>();
-            CreateMap<MatchDTO, Match>();
+            CreateMap<Match, MatchDTO>().ReverseMap();
 
-            CreateMap<Pronostic, PronosticDTO>();
-            CreateMap<PronosticDTO, Pronostic>();
+            CreateMap<Pronostic, PronosticDTO>().ReverseMap();
         }
         
     }
