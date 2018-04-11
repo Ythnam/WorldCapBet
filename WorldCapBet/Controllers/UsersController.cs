@@ -70,6 +70,7 @@ namespace WorldCapBet.Controllers
                 Username = user.Username,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                Email = user.Email,
                 Token = tokenString
             });
         }
@@ -111,7 +112,7 @@ namespace WorldCapBet.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody]UserDTO userDto)
+        public IActionResult UpdateProfile(int id, [FromBody]UserDTO userDto)
         {
             // map dto to entity and set id
             var user = _mapper.Map<User>(userDto);
@@ -120,7 +121,7 @@ namespace WorldCapBet.Controllers
             try
             {
                 // save 
-                _userService.Update(user, userDto.Password);
+                _userService.UpdateProfile(user, userDto.Password);
                 return Ok();
             }
             catch (AppException ex)

@@ -56,6 +56,9 @@ namespace WorldCapBet.BLL
             if (_context.User.Any(x => x.Username == user.Username))
                 throw new AppException("Username " + user.Username + " is already taken");
 
+            if (_context.User.Any(x => x.Email == user.Email))
+                throw new AppException("Email adress " + user.Email + " is already used");
+
             user.Password = CryptoHelper.Encrypt(password);
 
             _context.User.Add(user);
@@ -64,7 +67,7 @@ namespace WorldCapBet.BLL
             return user;
         }
 
-        public void Update(User userParam, string password = null)
+        public void UpdateProfile(User userParam, string password = null)
         {
             var user = _context.User.Find(userParam.Id);
 
