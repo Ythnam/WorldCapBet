@@ -58,10 +58,22 @@ namespace WorldCapBet.BLL
 
             if (context.User.Any(x => x.Email == user.Email))
                 throw new AppException("Email adress " + user.Email + " is already used");
-
+           
             user.Password = CryptoHelper.Encrypt(password);
 
             context.User.Add(user);
+            context.SaveChanges();
+
+            // get number of match
+            int numberOfMatches = 63;
+            for (int i = 1; i <= numberOfMatches; i++)
+            {
+                context.Pronostic.Add(new Pronostic
+                {
+                    IdUser = user.Id,
+                    IdMatch = i
+                });
+            }
             context.SaveChanges();
 
             return user;
