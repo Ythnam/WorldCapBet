@@ -62,16 +62,15 @@ namespace WorldCapBet.BLL
             user.Password = CryptoHelper.Encrypt(password);
 
             context.User.Add(user);
-            context.SaveChanges();
+            context.SaveChanges();  // needed to have the ID of current User object on the following code
 
-            // get number of match
-            int numberOfMatches = 63;
-            for (int i = 1; i <= numberOfMatches; i++)
+            // Add pronostic for each match already created
+            foreach(Match match in context.Match)
             {
                 context.Pronostic.Add(new Pronostic
                 {
                     IdUser = user.Id,
-                    IdMatch = i
+                    IdMatch = match.Id
                 });
             }
             context.SaveChanges();

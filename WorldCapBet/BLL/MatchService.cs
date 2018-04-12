@@ -26,6 +26,18 @@ namespace WorldCapBet.BLL
             }
 
             context.Match.Add(match);
+            context.SaveChanges(); // needed to have the ID of current match object on the following code
+
+
+            // Create pronostic for each user when a match is created
+            foreach(User user in context.User)
+            {
+                context.Pronostic.Add(new Pronostic
+                {
+                    IdMatch = match.Id,
+                    IdUser = user.Id
+                });
+            }
             context.SaveChanges();
 
             return match;
