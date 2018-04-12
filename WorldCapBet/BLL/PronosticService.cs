@@ -48,9 +48,13 @@ namespace WorldCapBet.BLL
         public void Update(Pronostic pronosticParam)
         {
             var pronostic = context.Pronostic.Find(pronosticParam.Id);
-
             if (pronostic == null)
                 throw new AppException("Pronostic not found");
+
+            // Check is match has alredy start to avoid update of a pronostic
+            var match = context.Match.Find(pronostic.IdMatch);
+            if (match.Date <= DateTime.Now)
+                throw new AppException("Match has already started, you can't change pronostic");
 
             pronostic.ScoreTeam1 = pronosticParam.ScoreTeam1;
             pronostic.ScoreTeam2 = pronosticParam.ScoreTeam2;
