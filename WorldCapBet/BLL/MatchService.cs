@@ -48,6 +48,9 @@ namespace WorldCapBet.BLL
             var match = context.Match.Find(id);
             if (match != null)
             {
+                var pronostics = context.Pronostic.Where(p => p.IdMatch == match.Id);
+                foreach (Pronostic p in pronostics)
+                    context.Remove(p);
                 context.Match.Remove(match);
                 context.SaveChanges();
             }

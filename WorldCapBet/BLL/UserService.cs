@@ -112,10 +112,10 @@ namespace WorldCapBet.BLL
             var user = context.User.Find(id);
             if (user != null)
             {
-                context.User.Remove(user);
                 var pronostics = context.Pronostic.Where(p => p.IdUser == user.Id);
                 foreach (Pronostic p in pronostics)
                     context.Remove(p);
+                context.User.Remove(user);
                 context.SaveChanges();
             }
         }
