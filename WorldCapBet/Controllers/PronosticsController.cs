@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WorldCapBet.ApplicationException;
+using WorldCapBet.BLL;
 using WorldCapBet.Data;
 using WorldCapBet.Model;
+using WorldCapBet.ModelDTO;
 
 namespace WorldCapBet.Controllers
 {
@@ -14,113 +18,80 @@ namespace WorldCapBet.Controllers
     [Route("api/Pronostics")]
     public class PronosticsController : Controller
     {
-        private readonly WorldCapBetContext _context;
+        private IPronosticService pronosticService;
+        private IMapper mapper;
 
-        public PronosticsController(WorldCapBetContext context)
+        public PronosticsController(IPronosticService _pronosticService, IMapper _mapper)
         {
-            _context = context;
+            pronosticService = _pronosticService;
+            mapper = _mapper;
         }
 
         // GET: api/Pronostics
         [HttpGet]
-        public IEnumerable<Pronostic> GetPronostic()
+        public IActionResult GetPronostic()
         {
-            return _context.Pronostic;
+            var pronostic = pronosticService.GetAll();
+            var pronosticDtos = mapper.Map<IList<PronosticDTO>>(pronostic);
+            return Ok(pronosticDtos);
         }
 
         // GET: api/Pronostics/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetPronostic([FromRoute] int id)
+        public IActionResult GetPronostic([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var pronostic = await _context.Pronostic.SingleOrDefaultAsync(m => m.Id == id);
-
-            if (pronostic == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(pronostic);
+            var pronostic = pronosticService.GetById(id);
+            var pronosticDtos = mapper.Map<PronosticDTO>(pronostic);
+            return Ok(pronosticDtos);
         }
 
         // PUT: api/Pronostics/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPronostic([FromRoute] int id, [FromBody] Pronostic pronostic)
+        public IActionResult UpdatePronostic([FromRoute] int id, [FromBody] PronosticDTO pronosticDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != pronostic.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(pronostic).State = EntityState.Modified;
+            // map dto to entity and set id
+            var pronostic = mapper.Map<Pronostic>(pronosticDto);
+            pronostic.Id = id;
 
             try
             {
-                await _context.SaveChangesAsync();
+                // save 
+                pronosticService.Update(pronostic);
+                return Ok();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (AppException ex)
             {
-                if (!PronosticExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                // return error message if there was an exception
+                return BadRequest(ex.Message);
             }
-
-            return NoContent();
         }
 
         // POST: api/Pronostics
         [HttpPost]
-        public async Task<IActionResult> PostPronostic([FromBody] Pronostic pronostic)
+        public IActionResult PostPronostic([FromBody] PronosticDTO pronosticDto)
         {
-            if (!ModelState.IsValid)
+            // map dto to entity
+            var pronostic = mapper.Map<Pronostic>(pronosticDto);
+
+            try
             {
-                return BadRequest(ModelState);
+                // save 
+                pronosticService.Create(pronostic);
+                return Ok();
             }
-
-            _context.Pronostic.Add(pronostic);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPronostic", new { id = pronostic.Id }, pronostic);
+            catch (AppException ex)
+            {
+                // return error message if there was an exception
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE: api/Pronostics/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePronostic([FromRoute] int id)
+        public IActionResult DeletePronostic([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var pronostic = await _context.Pronostic.SingleOrDefaultAsync(m => m.Id == id);
-            if (pronostic == null)
-            {
-                return NotFound();
-            }
-
-            _context.Pronostic.Remove(pronostic);
-            await _context.SaveChangesAsync();
-
-            return Ok(pronostic);
-        }
-
-        private bool PronosticExists(int id)
-        {
-            return _context.Pronostic.Any(e => e.Id == id);
+            pronosticService.Delete(id);
+            return Ok();
         }
     }
 }

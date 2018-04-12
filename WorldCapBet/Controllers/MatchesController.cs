@@ -18,21 +18,21 @@ namespace WorldCapBet.Controllers
     [Route("api/Matches")]
     public class MatchesController : Controller
     {
-        private IMatchService _matchService;
-        private IMapper _mapper;
+        private IMatchService matchService;
+        private IMapper mapper;
 
-        public MatchesController(IMatchService matchService, IMapper mapper)
+        public MatchesController(IMatchService _matchService, IMapper _mapper)
         {
-            _matchService = matchService;
-            _mapper = mapper;
+            this.matchService = _matchService;
+            this.mapper = _mapper;
         }
 
         // GET: api/Matches
         [HttpGet]
         public IActionResult GetMatch()
         {
-            var match = _matchService.GetAll();
-            var matchDtos = _mapper.Map<IList<MatchDTO>>(match);
+            var match = matchService.GetAll();
+            var matchDtos = mapper.Map<IList<MatchDTO>>(match);
             return Ok(matchDtos);
         }
 
@@ -40,8 +40,8 @@ namespace WorldCapBet.Controllers
         [HttpGet("{id}")]
         public IActionResult GetMatch([FromRoute]int id)
         {
-            var match = _matchService.GetById(id);
-            var matchDtos = _mapper.Map<IList<MatchDTO>>(match);
+            var match = matchService.GetById(id);
+            var matchDtos = mapper.Map<MatchDTO>(match);
             return Ok(matchDtos);
         }
 
@@ -50,13 +50,13 @@ namespace WorldCapBet.Controllers
         public IActionResult UpdateMatch([FromRoute]int id, [FromBody] MatchDTO matchDto)
         {
             // map dto to entity and set id
-            var match = _mapper.Map<Match>(matchDto);
+            var match = mapper.Map<Match>(matchDto);
             match.Id = id;
 
             try
             {
                 // save 
-                _matchService.UpdateMatch(match);
+                matchService.UpdateMatch(match);
                 return Ok();
             }
             catch (AppException ex)
@@ -67,17 +67,17 @@ namespace WorldCapBet.Controllers
         }
 
         // PUT: api/Matches/5
-        [HttpPut("score/{id}")]
+        [HttpPut("{id}/score")]
         public IActionResult UpdateScore([FromRoute]int id, [FromBody] MatchDTO matchDto)
         {
             // map dto to entity and set id
-            var match = _mapper.Map<Match>(matchDto);
+            var match = mapper.Map<Match>(matchDto);
             match.Id = id;
 
             try
             {
                 // save 
-                _matchService.UpdateScore(match);
+                matchService.UpdateScore(match);
                 return Ok();
             }
             catch (AppException ex)
@@ -92,12 +92,12 @@ namespace WorldCapBet.Controllers
         public IActionResult PostMatch([FromBody] MatchDTO matchDto)
         {
             // map dto to entity
-            var match = _mapper.Map<Match>(matchDto);
+            var match = mapper.Map<Match>(matchDto);
 
             try
             {
                 // save 
-                _matchService.Create(match);
+                matchService.Create(match);
                 return Ok();
             }
             catch (AppException ex)
@@ -111,7 +111,7 @@ namespace WorldCapBet.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteMatch([FromRoute] int id)
         {
-            _matchService.Delete(id);
+            matchService.Delete(id);
             return Ok();
         }
     }

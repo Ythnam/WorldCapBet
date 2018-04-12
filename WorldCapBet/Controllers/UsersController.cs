@@ -26,31 +26,31 @@ namespace WorldCapBet.Controllers
     [Route("api/Users")]
     public class UsersController : Controller
     {
-        private IUserService _userService;
-        private IMapper _mapper;
-        private readonly AppSettings _appSettings;
+        private IUserService userService;
+        private IMapper mapper;
+        private readonly AppSettings appSettings;
 
         public UsersController(
-            IUserService userService,
-            IMapper mapper,
-            IOptions<AppSettings> appSettings)
+            IUserService _userService,
+            IMapper _mapper,
+            IOptions<AppSettings> _appSettings)
         {
-            _userService = userService;
-            _mapper = mapper;
-            _appSettings = appSettings.Value;
+            this.userService = _userService;
+            this.mapper = _mapper;
+            this.appSettings = _appSettings.Value;
         }
 
         [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody]UserDTO userDto)
         {
-            var user = _userService.Authenticate(userDto.Username, userDto.Password);
+            var user = userService.Authenticate(userDto.Username, userDto.Password);
 
             if (user == null)
                 return Unauthorized();
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
@@ -80,12 +80,12 @@ namespace WorldCapBet.Controllers
         public IActionResult Register([FromBody]UserDTO userDto)
         {
             // map dto to entity
-            var user = _mapper.Map<User>(userDto);
+            var user = mapper.Map<User>(userDto);
 
             try
             {
                 // save 
-                _userService.Create(user, userDto.Password);
+                userService.Create(user, userDto.Password);
                 return Ok();
             }
             catch (AppException ex)
@@ -98,16 +98,16 @@ namespace WorldCapBet.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var users = _userService.GetAll();
-            var userDtos = _mapper.Map<IList<UserDTO>>(users);
+            var users = userService.GetAll();
+            var userDtos = mapper.Map<IList<UserDTO>>(users);
             return Ok(userDtos);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var user = _userService.GetById(id);
-            var userDto = _mapper.Map<UserDTO>(user);
+            var user = userService.GetById(id);
+            var userDto = mapper.Map<UserDTO>(user);
             return Ok(userDto);
         }
 
@@ -115,13 +115,13 @@ namespace WorldCapBet.Controllers
         public IActionResult UpdateProfile(int id, [FromBody]UserDTO userDto)
         {
             // map dto to entity and set id
-            var user = _mapper.Map<User>(userDto);
+            var user = mapper.Map<User>(userDto);
             user.Id = id;
 
             try
             {
                 // save 
-                _userService.UpdateProfile(user, userDto.Password);
+                userService.UpdateProfile(user, userDto.Password);
                 return Ok();
             }
             catch (AppException ex)
@@ -134,7 +134,7 @@ namespace WorldCapBet.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            _userService.Delete(id);
+            userService.Delete(id);
             return Ok();
         }
     }

@@ -67,6 +67,7 @@ namespace WorldCapBet
             // configure DI for application services
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IMatchService, MatchService>();
+            services.AddScoped<IPronosticService, PronosticService>();
 
             // Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(c =>

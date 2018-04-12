@@ -10,50 +10,50 @@ namespace WorldCapBet.BLL
 {
     public class MatchService : IMatchService
     {
-        private WorldCapBetContext _context;
+        private WorldCapBetContext context;
 
-        public MatchService(WorldCapBetContext context)
+        public MatchService(WorldCapBetContext _context)
         {
-            _context = context;
+            this.context = _context;
         }
 
         public Match Create(Match match)
         {
-            if (_context.Match.Any(x => x.Team1 == match.Team1 || x.Team1 == match.Team2))
+            if (context.Match.Any(x => x.Team1 == match.Team1 || x.Team1 == match.Team2))
             {
-                if (_context.Match.Any(x => x.Date == match.Date && x.Team2 == match.Team1 || x.Team2 == match.Team2))
+                if (context.Match.Any(x => x.Date == match.Date && x.Team2 == match.Team1 || x.Team2 == match.Team2))
                     throw new AppException("A match between " + match.Team1 + " and " + match.Team2 + " at " + match.Date + " already exist");
             }
 
-            _context.Match.Add(match);
-            _context.SaveChanges();
+            context.Match.Add(match);
+            context.SaveChanges();
 
             return match;
         }
 
         public void Delete(int id)
         {
-            var match = _context.Match.Find(id);
+            var match = context.Match.Find(id);
             if (match != null)
             {
-                _context.Match.Remove(match);
-                _context.SaveChanges();
+                context.Match.Remove(match);
+                context.SaveChanges();
             }
         }
 
         public IEnumerable<Match> GetAll()
         {
-            return _context.Match;
+            return context.Match;
         }
 
         public Match GetById(int id)
         {
-            return _context.Match.Find(id);
+            return context.Match.Find(id);
         }
 
         public void UpdateMatch(Match matchParam)
         {
-            var match = _context.Match.Find(matchParam.Id);
+            var match = context.Match.Find(matchParam.Id);
 
             if (match == null)
                 throw new AppException("Match not found");
@@ -63,13 +63,13 @@ namespace WorldCapBet.BLL
             match.Team2 = matchParam.Team2;
             match.Date = matchParam.Date;
 
-            _context.Match.Update(match);
-            _context.SaveChanges();
+            context.Match.Update(match);
+            context.SaveChanges();
         }
 
         public void UpdateScore(Match matchParam)
         {
-            var match = _context.Match.Find(matchParam.Id);
+            var match = context.Match.Find(matchParam.Id);
 
             if (match == null)
                 throw new AppException("Match not found");
@@ -78,8 +78,8 @@ namespace WorldCapBet.BLL
             match.ScoreTeam1 = matchParam.ScoreTeam1;
             match.ScoreTeam2 = matchParam.ScoreTeam2;
 
-            _context.Match.Update(match);
-            _context.SaveChanges();
+            context.Match.Update(match);
+            context.SaveChanges();
         }
     }
 }

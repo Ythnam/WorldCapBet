@@ -11,11 +11,11 @@ namespace WorldCapBet.BLL
 {
     public class UserService : IUserService
     {
-        private WorldCapBetContext _context;
+        private WorldCapBetContext context;
 
-        public UserService(WorldCapBetContext context)
+        public UserService(WorldCapBetContext _context)
         {
-            _context = context;
+            this.context = _context;
         }
 
         public User Authenticate(string username, string password)
@@ -23,7 +23,7 @@ namespace WorldCapBet.BLL
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
                 return null;
 
-            var user = _context.User.SingleOrDefault(x => x.Username == username);
+            var user = context.User.SingleOrDefault(x => x.Username == username);
 
             // check if username exists
             if (user == null)
@@ -39,12 +39,12 @@ namespace WorldCapBet.BLL
 
         public IEnumerable<User> GetAll()
         {
-            return _context.User;
+            return context.User;
         }
 
         public User GetById(int id)
         {
-            return _context.User.Find(id);
+            return context.User.Find(id);
         }
 
         public User Create(User user, string password)
@@ -53,23 +53,23 @@ namespace WorldCapBet.BLL
             if (string.IsNullOrWhiteSpace(password))
                 throw new AppException("Password is required");
 
-            if (_context.User.Any(x => x.Username == user.Username))
+            if (context.User.Any(x => x.Username == user.Username))
                 throw new AppException("Username " + user.Username + " is already taken");
 
-            if (_context.User.Any(x => x.Email == user.Email))
+            if (context.User.Any(x => x.Email == user.Email))
                 throw new AppException("Email adress " + user.Email + " is already used");
 
             user.Password = CryptoHelper.Encrypt(password);
 
-            _context.User.Add(user);
-            _context.SaveChanges();
+            context.User.Add(user);
+            context.SaveChanges();
 
             return user;
         }
 
         public void UpdateProfile(User userParam, string password = null)
         {
-            var user = _context.User.Find(userParam.Id);
+            var user = context.User.Find(userParam.Id);
 
             if (user == null)
                 throw new AppException("User not found");
@@ -77,7 +77,7 @@ namespace WorldCapBet.BLL
             if (userParam.Username != user.Username)
             {
                 // username has changed so check if the new username is already taken
-                if (_context.User.Any(x => x.Username == userParam.Username))
+                if (context.User.Any(x => x.Username == userParam.Username))
                     throw new AppException("Username " + userParam.Username + " is already taken");
             }
 
@@ -92,17 +92,17 @@ namespace WorldCapBet.BLL
                 user.Password = CryptoHelper.Encrypt(password);
             }
 
-            _context.User.Update(user);
-            _context.SaveChanges();
+            context.User.Update(user);
+            context.SaveChanges();
         }
 
         public void Delete(int id)
         {
-            var user = _context.User.Find(id);
+            var user = context.User.Find(id);
             if (user != null)
             {
-                _context.User.Remove(user);
-                _context.SaveChanges();
+                context.User.Remove(user);
+                context.SaveChanges();
             }
         }
 
