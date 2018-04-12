@@ -137,5 +137,13 @@ namespace WorldCapBet.Controllers
             userService.Delete(id);
             return Ok();
         }
+
+        [HttpGet("{id}/pronostics")]
+        public IActionResult GetUserPronostic(int id)
+        {
+            var pronostic = userService.GetUserPronostics(id);
+            var pronosticDtos = mapper.Map<IList<PronosticDTO>>(pronostic);
+            return Ok(pronosticDtos);
+        }
     }
 }

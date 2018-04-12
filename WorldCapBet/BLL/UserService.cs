@@ -137,5 +137,11 @@ namespace WorldCapBet.BLL
 
             return true;
         }
+
+        public IEnumerable<Pronostic> GetUserPronostics(int id)
+        {
+            return context.Pronostic.Where(p => p.IdUser == id);
+        }
+
     }
 }
