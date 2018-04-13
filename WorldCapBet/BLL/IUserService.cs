@@ -15,5 +15,6 @@ namespace WorldCapBet.BLL
         User Create(User user, string password);
         void UpdateProfile(User user, string password = null);
         void Delete(int id);
+        int GetUserScore(int id);
     }
 }

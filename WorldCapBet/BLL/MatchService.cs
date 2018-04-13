@@ -95,6 +95,74 @@ namespace WorldCapBet.BLL
 
             context.Match.Update(match);
             context.SaveChanges();
+
+            // After the save because score had to been added to the database
+            this.Scoring(matchParam.Id);
+        }
+
+        /// <summary>
+        /// Scoring pronostic
+        /// </summary>
+        /// <param name="id"> is the ID of the the match</param>
+        private void Scoring(int idMatch)
+        {
+            //Select pronostic all pronostic done for a match
+            var pronostics = context.Pronostic.Where(p => p.IdMatch == idMatch);
+            var match = context.Match.Where(m => m.Id == idMatch).SingleOrDefault();
+
+            foreach (Pronostic pronostic in pronostics)
+            {
+                if (!IsPronosticRight(pronostic, match))
+                    pronostic.Scoring = 0;
+                else
+                {
+                    if (pronostic.ScoreTeam1 == match.ScoreTeam1 && pronostic.ScoreTeam2 == match.ScoreTeam2)
+                        pronostic.Scoring = 4;
+                    else
+                    {
+                        if (pronostic.ScoreTeam1 == match.ScoreTeam1 || pronostic.ScoreTeam2 == match.ScoreTeam2)
+                            pronostic.Scoring = 2;
+                        else
+                            pronostic.Scoring = 1;
+                    }
+                }
+                context.Pronostic.Update(pronostic);
+            }
+            context.SaveChanges();
+        }
+
+        private bool IsPronosticRight(Pronostic pronostic, Match match)
+        {
+            if (StateTeam1(pronostic) == StateTeam1(match))
+                return true;
+            return false;
+        }
+
+        private enum MatchStatus { Win = 1, Equal = 0, Loose = -1 };
+        private MatchStatus StateTeam1(Match match)
+        {
+            if (match.ScoreTeam1 > match.ScoreTeam2)
+                return MatchStatus.Win;
+            else
+            {
+                if (match.ScoreTeam1 == match.ScoreTeam2)
+                    return MatchStatus.Equal;
+                else
+                    return MatchStatus.Loose;
+            }
+        }
+
+        private MatchStatus StateTeam1(Pronostic pronostic)
+        {
+            if (pronostic.ScoreTeam1 > pronostic.ScoreTeam2)
+                return MatchStatus.Win;
+            else
+            {
+                if (pronostic.ScoreTeam1 == pronostic.ScoreTeam2)
+                    return MatchStatus.Equal;
+                else
+                    return MatchStatus.Loose;
+            }
         }
     }
 }

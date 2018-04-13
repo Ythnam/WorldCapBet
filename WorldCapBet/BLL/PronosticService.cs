@@ -62,5 +62,7 @@ namespace WorldCapBet.BLL
             context.Pronostic.Update(pronostic);
             context.SaveChanges();
         }
+
+        
     }
 }

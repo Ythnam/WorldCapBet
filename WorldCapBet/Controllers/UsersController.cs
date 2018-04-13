@@ -145,5 +145,27 @@ namespace WorldCapBet.Controllers
             var pronosticDtos = mapper.Map<IList<PronosticDTO>>(pronostic);
             return Ok(pronosticDtos);
         }
+
+        [HttpGet("ranking")]
+        public IActionResult GetRanking()
+        {
+            var users = userService.GetAll();
+            var userDtos = mapper.Map <IList<UserDTO>>(users);
+
+            foreach(UserDTO userDto in userDtos)  
+                userDto.Score = userService.GetUserScore(userDto.Id);
+
+
+            var rankedDto = userDtos.OrderBy(userdto => userdto.Score);
+            int inc = 0;
+
+            foreach(UserDTO userDto in rankedDto)
+            {
+                userDto.Rank = rankedDto.Count() - 0;
+                inc++;
+            }
+
+            return Ok(rankedDto);
+        }
     }
 }

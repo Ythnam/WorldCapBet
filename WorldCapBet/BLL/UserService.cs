@@ -143,5 +143,16 @@ namespace WorldCapBet.BLL
             return context.Pronostic.Where(p => p.IdUser == id);
         }
 
+        public int GetUserScore(int id)
+        {
+            var pronostics = context.Pronostic.Where(p => p.IdUser == id);
+            int score = 0;
+            foreach(Pronostic pronostic in pronostics)
+            {
+                score += pronostic.Scoring;
+            }
+            return score;
+        }
+
     }
 }

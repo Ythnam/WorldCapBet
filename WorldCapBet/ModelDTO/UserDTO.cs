@@ -18,5 +18,9 @@ namespace WorldCapBet.ModelDTO
         public string Email { get; set; }
 
         public string Password { get; set; }
+
+        public int Score { get; set; }
+
+        public int Rank { get; set; }
     }
 }
