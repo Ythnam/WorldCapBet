@@ -19,6 +19,9 @@ namespace WorldCapBet.BLL
 
         public Pronostic Create(Pronostic pronostic)
         {
+            if (context.Pronostic.Any(x => x.IdMatch == pronostic.IdMatch && x.IdUser == pronostic.IdUser))
+                throw new AppException("Pronostic already created on match id " + pronostic.IdMatch + " for user id " + pronostic.IdUser);
+
             context.Pronostic.Add(pronostic);
             context.SaveChanges();
 
@@ -62,7 +65,5 @@ namespace WorldCapBet.BLL
             context.Pronostic.Update(pronostic);
             context.SaveChanges();
         }
-
-        
     }
 }
