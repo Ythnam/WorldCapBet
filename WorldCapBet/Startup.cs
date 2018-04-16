@@ -34,7 +34,7 @@ namespace WorldCapBet
             services.AddMvc();
 
             services.AddDbContext<WorldCapBetContext>(options =>
-                    options.UseInMemoryDatabase(Configuration.GetConnectionString("WorldCapBetContext")));
+                    options.UseSqlServer(Configuration.GetConnectionString("WorldCapBetContext")));
 
             // add automapper
             services.AddAutoMapper();
