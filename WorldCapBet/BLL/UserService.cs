@@ -61,12 +61,6 @@ namespace WorldCapBet.BLL
            
             user.Password = CryptoHelper.Encrypt(password);
 
-            //if (context.User.Any())
-            //    user.Id = context.User.OrderByDescending(x => x.Id).First().Id + 1;
-            //else
-            //    user.Id = 1;
-            
-
             context.User.Add(user);
             context.SaveChanges();  // needed to have the ID of current User object on the following code
 
