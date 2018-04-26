@@ -18,5 +18,7 @@ namespace WorldCapBet.ModelDTO
         public int ScoreTeam2 { get; set; }
 
         public DateTime Date { get; set; }
+
+        public PronosticDTO Pronostic { get; set; }
     }
 }

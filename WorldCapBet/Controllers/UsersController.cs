@@ -27,15 +27,18 @@ namespace WorldCapBet.Controllers
     public class UsersController : Controller
     {
         private IUserService userService;
+        private IMatchService matchService;
         private IMapper mapper;
         private readonly AppSettings appSettings;
 
         public UsersController(
             IUserService _userService,
+            IMatchService _matchService,
             IMapper _mapper,
             IOptions<AppSettings> _appSettings)
         {
             this.userService = _userService;
+            this.matchService = _matchService;
             this.mapper = _mapper;
             this.appSettings = _appSettings.Value;
         }
@@ -166,6 +169,26 @@ namespace WorldCapBet.Controllers
             }
 
             return Ok(rankedDto);
+        }
+
+        [HttpGet("{id}/AllMatchAndPronostic")]
+        public IActionResult GetAllMatchAndPronostic([FromRoute]int id)
+        {
+            var pronostics = userService.GetUserPronostics(id);
+            var matchs = matchService.GetAll();
+
+            var matchDtos = mapper.Map<IList<MatchDTO>>(matchs);
+            var pronosticDtos = mapper.Map<IList<PronosticDTO>>(pronostics);
+
+            foreach (MatchDTO matchDto in matchDtos)
+            {
+
+                var pronosticdto = pronosticDtos.Where(x => x.IdMatch == matchDto.Id).Single();
+                if (pronosticdto != null)
+                    matchDto.Pronostic = pronosticdto;
+            }
+
+            return Ok(matchDtos);
         }
     }
 }
