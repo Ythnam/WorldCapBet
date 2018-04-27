@@ -25,6 +25,9 @@ namespace WorldCapBet.BLL
                     throw new AppException("A match between " + match.Team1 + " and " + match.Team2 + " at " + match.Date + " already exist");
             }
 
+            match.ScoreTeam1 = null;
+            match.ScoreTeam2 = null;
+
             context.Match.Add(match);
             context.SaveChanges(); // needed to have the ID of current match object on the following code
 

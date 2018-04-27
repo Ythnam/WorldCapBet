@@ -17,9 +17,9 @@ namespace WorldCapBet.Model
 
         public string Team2 { get; set; }
 
-        public int ScoreTeam1 { get; set; }
+        public int? ScoreTeam1 { get; set; }
 
-        public int ScoreTeam2 { get; set; }
+        public int? ScoreTeam2 { get; set; }
 
         public DateTime Date { get; set; }
     }

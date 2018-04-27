@@ -22,6 +22,9 @@ namespace WorldCapBet.BLL
             if (context.Pronostic.Any(x => x.IdMatch == pronostic.IdMatch && x.IdUser == pronostic.IdUser))
                 throw new AppException("Pronostic already created on match id " + pronostic.IdMatch + " for user id " + pronostic.IdUser);
 
+            pronostic.ScoreTeam1 = null;
+            pronostic.ScoreTeam2 = null;
+
             context.Pronostic.Add(pronostic);
             context.SaveChanges();
 
